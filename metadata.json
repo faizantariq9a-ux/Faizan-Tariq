@@ -1,0 +1,6 @@
+{
+  "name": "Dragon Tiger Predictor Demo",
+  "description": "A virtual-coin statistical analysis and round history tracker for Dragon vs Tiger with a 6-second calculation cycle, roadmaps, and native Android Kotlin source project.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
