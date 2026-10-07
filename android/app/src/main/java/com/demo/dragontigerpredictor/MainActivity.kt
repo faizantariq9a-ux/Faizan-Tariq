@@ -44,7 +44,8 @@ import kotlin.math.roundToInt
 
 enum class Side(val label: String, val symbol: String) {
     DRAGON("DRAGON", "🐉"),
-    TIGER("TIGER", "🐯")
+    TIGER("TIGER", "🐯"),
+    TIE("TIE", "⚖️")
 }
 
 data class StatisticalEstimate(
@@ -65,6 +66,7 @@ class LocalHistoryStorage(context: Context) {
                 when (token) {
                     "D" -> Side.DRAGON
                     "T" -> Side.TIGER
+                    "E" -> Side.TIE
                     else -> null
                 }
             }
@@ -73,7 +75,13 @@ class LocalHistoryStorage(context: Context) {
 
     fun saveHistory(history: List<Side>) {
         val capped = history.takeLast(100)
-        val serialized = capped.joinToString(",") { if (it == Side.DRAGON) "D" else "T" }
+        val serialized = capped.joinToString(",") {
+            when (it) {
+                Side.DRAGON -> "D"
+                Side.TIGER -> "T"
+                Side.TIE -> "E"
+            }
+        }
         prefs.edit().putString("round_history", serialized).apply()
     }
 }
@@ -115,8 +123,10 @@ fun DragonTigerPredictorScreen() {
     val totalRounds = history.size
     val dragonCount = history.count { it == Side.DRAGON }
     val tigerCount = history.count { it == Side.TIGER }
+    val tieCount = history.count { it == Side.TIE }
     val dragonPct = if (totalRounds > 0) (dragonCount * 1000.0 / totalRounds).roundToInt() / 10.0 else 0.0
     val tigerPct = if (totalRounds > 0) (tigerCount * 1000.0 / totalRounds).roundToInt() / 10.0 else 0.0
+    val tiePct = if (totalRounds > 0) (tieCount * 1000.0 / totalRounds).roundToInt() / 10.0 else 0.0
 
     // Calculate active streak
     val currentStreakSide = history.lastOrNull()
@@ -325,6 +335,42 @@ fun DragonTigerPredictorScreen() {
                         fontSize = 11.sp
                     )
                 }
+            }
+        }
+
+        // TIE Button
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(74.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(Color(0xFF065F46), Color(0xFF022C22))
+                    )
+                )
+                .border(1.5.dp, Color(0xFF10B981), RoundedCornerShape(16.dp))
+                .clickable { recordRound(Side.TIE) }
+                .padding(horizontal = 20.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "⚖️ TIE",
+                    color = Color.White,
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "$tieCount ($tiePct%) · Tap to Record",
+                    color = Color(0xFFA7F3D0),
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily.Monospace
+                )
             }
         }
 

@@ -63,6 +63,27 @@ class SoundController {
     }
   }
 
+  public playTieTap() {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(261.63, now); // C4 balanced chime
+      osc.frequency.exponentialRampToValueAtTime(392.0, now + 0.15); // G4 fifth
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.19);
+    } catch {
+      // Ignore audio errors
+    }
+  }
+
   public playEstimateReady() {
     const ctx = this.getContext();
     if (!ctx) return;

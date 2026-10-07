@@ -25,7 +25,7 @@ import {
   calculateStatistics,
 } from './utils/statistics';
 import { soundFX } from './utils/sound';
-import { DragonCrestSvg, TigerCrestSvg } from './components/Crests';
+import { DragonCrestSvg, TieCrestSvg, TigerCrestSvg } from './components/Crests';
 import { RoadmapPanel } from './components/RoadmapPanel';
 import { MethodologyPanel } from './components/MethodologyPanel';
 import { AndroidSourceViewer } from './components/AndroidSourceViewer';
@@ -138,8 +138,10 @@ export default function App() {
   const handleRecordResult = (side: RoundSide) => {
     if (side === 'DRAGON') {
       soundFX.playDragonTap();
-    } else {
+    } else if (side === 'TIGER') {
       soundFX.playTigerTap();
+    } else {
+      soundFX.playTieTap();
     }
 
     setLastTappedSide(side);
@@ -197,7 +199,7 @@ export default function App() {
 
   const handleSeedFiveRounds = () => {
     soundFX.playControlClick();
-    const sampleSides: RoundSide[] = ['DRAGON', 'TIGER', 'DRAGON', 'DRAGON', 'TIGER'];
+    const sampleSides: RoundSide[] = ['DRAGON', 'TIGER', 'DRAGON', 'TIE', 'TIGER'];
     setRounds((prev) => {
       let nextNum = prev.length > 0 ? prev[prev.length - 1].roundNumber + 1 : 1;
       const additions: RoundRecord[] = sampleSides.map((s, i) => ({
@@ -352,43 +354,71 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Two Large Touch Buttons: 🐉 DRAGON & 🐯 TIGER */}
-                <div className="grid grid-cols-2 gap-4">
-                  {/* 🐉 DRAGON Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleRecordResult('DRAGON')}
-                    className={`group relative min-h-[156px] rounded-2xl p-4 flex flex-col items-center justify-center gap-2.5 bg-gradient-to-b from-[#991B1B] to-[#450A0A] border transition-transform duration-150 active:scale-[0.97] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EF4444] ${
-                      lastTappedSide === 'DRAGON'
-                        ? 'border-[#F87171] shadow-lg shadow-[#DC2626]/20'
-                        : 'border-[#EF4444]/60 hover:border-[#F87171]'
-                    }`}
-                  >
-                    <DragonCrestSvg className="w-11 h-11 text-[#FCA5A5] group-hover:scale-105 transition-transform" />
-                    <div className="text-xl sm:text-2xl font-bold tracking-wider text-white whitespace-nowrap">
-                      🐉 DRAGON
-                    </div>
-                    <span className="text-xs text-[#FCA5A5]/90 font-medium whitespace-nowrap">
-                      Tap to Record Round
-                    </span>
-                  </button>
+                {/* Three Large Touch Buttons: 🐉 DRAGON, ⚖️ TIE, & 🐯 TIGER */}
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3.5">
+                    {/* 🐉 DRAGON Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleRecordResult('DRAGON')}
+                      className={`group relative min-h-[144px] rounded-2xl p-4 flex flex-col items-center justify-center gap-2 bg-gradient-to-b from-[#991B1B] to-[#450A0A] border transition-transform duration-150 active:scale-[0.97] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EF4444] ${
+                        lastTappedSide === 'DRAGON'
+                          ? 'border-[#F87171] shadow-lg shadow-[#DC2626]/20'
+                          : 'border-[#EF4444]/60 hover:border-[#F87171]'
+                      }`}
+                    >
+                      <DragonCrestSvg className="w-10 h-10 text-[#FCA5A5] group-hover:scale-105 transition-transform" />
+                      <div className="text-xl sm:text-2xl font-bold tracking-wider text-white whitespace-nowrap">
+                        🐉 DRAGON
+                      </div>
+                      <span className="text-xs text-[#FCA5A5]/90 font-medium whitespace-nowrap">
+                        Tap to Record
+                      </span>
+                    </button>
 
-                  {/* 🐯 TIGER Button */}
+                    {/* 🐯 TIGER Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleRecordResult('TIGER')}
+                      className={`group relative min-h-[144px] rounded-2xl p-4 flex flex-col items-center justify-center gap-2 bg-gradient-to-b from-[#B45309] to-[#451A03] border transition-transform duration-150 active:scale-[0.97] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F59E0B] ${
+                        lastTappedSide === 'TIGER'
+                          ? 'border-[#FBBF24] shadow-lg shadow-[#F59E0B]/20'
+                          : 'border-[#F59E0B]/60 hover:border-[#FBBF24]'
+                      }`}
+                    >
+                      <TigerCrestSvg className="w-10 h-10 text-[#FDE68A] group-hover:scale-105 transition-transform" />
+                      <div className="text-xl sm:text-2xl font-bold tracking-wider text-white whitespace-nowrap">
+                        🐯 TIGER
+                      </div>
+                      <span className="text-xs text-[#FDE68A]/90 font-medium whitespace-nowrap">
+                        Tap to Record
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* ⚖️ TIE Button */}
                   <button
                     type="button"
-                    onClick={() => handleRecordResult('TIGER')}
-                    className={`group relative min-h-[156px] rounded-2xl p-4 flex flex-col items-center justify-center gap-2.5 bg-gradient-to-b from-[#B45309] to-[#451A03] border transition-transform duration-150 active:scale-[0.97] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F59E0B] ${
-                      lastTappedSide === 'TIGER'
-                        ? 'border-[#FBBF24] shadow-lg shadow-[#F59E0B]/20'
-                        : 'border-[#F59E0B]/60 hover:border-[#FBBF24]'
+                    onClick={() => handleRecordResult('TIE')}
+                    className={`group relative w-full min-h-[76px] rounded-2xl px-5 py-3.5 flex items-center justify-between bg-gradient-to-r from-[#065F46] via-[#064E3B] to-[#022C22] border transition-transform duration-150 active:scale-[0.98] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#10B981] ${
+                      lastTappedSide === 'TIE'
+                        ? 'border-[#34D399] shadow-lg shadow-[#10B981]/20'
+                        : 'border-[#10B981]/60 hover:border-[#34D399]'
                     }`}
                   >
-                    <TigerCrestSvg className="w-11 h-11 text-[#FDE68A] group-hover:scale-105 transition-transform" />
-                    <div className="text-xl sm:text-2xl font-bold tracking-wider text-white whitespace-nowrap">
-                      🐯 TIGER
+                    <div className="flex items-center gap-3.5">
+                      <TieCrestSvg className="w-9 h-9 text-[#A7F3D0] group-hover:scale-105 transition-transform shrink-0" />
+                      <div className="text-left">
+                        <div className="text-lg sm:text-xl font-bold tracking-wider text-white whitespace-nowrap">
+                          ⚖️ TIE
+                        </div>
+                        <div className="text-xs text-[#A7F3D0]/90 font-medium">
+                          Equal Card Rank Outcome
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-xs text-[#FDE68A]/90 font-medium whitespace-nowrap">
-                      Tap to Record Round
+                    <span className="text-xs font-mono text-[#A7F3D0] whitespace-nowrap">
+                      Tap to Record →
                     </span>
                   </button>
                 </div>
@@ -422,7 +452,7 @@ export default function App() {
                       {/* Smooth compositor-friendly progress bar */}
                       <div className="w-full h-2 rounded-full bg-[#1E293B] overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-[#DC2626] to-[#F59E0B] origin-left transition-transform duration-100"
+                          className="h-full bg-gradient-to-r from-[#DC2626] via-[#10B981] to-[#F59E0B] origin-left transition-transform duration-100"
                           style={{
                             transform: `scaleX(${progressPercentage / 100})`,
                           }}
@@ -448,7 +478,8 @@ export default function App() {
                           {MIN_ROUNDS_FOR_ESTIMATE - stats.totalRounds}
                         </span>{' '}
                         more {MIN_ROUNDS_FOR_ESTIMATE - stats.totalRounds === 1 ? 'round' : 'rounds'}{' '}
-                        by tapping <span className="text-[#F87171]">🐉 DRAGON</span> or{' '}
+                        by tapping <span className="text-[#F87171]">🐉 DRAGON</span>,{' '}
+                        <span className="text-[#34D399]">⚖️ TIE</span>, or{' '}
                         <span className="text-[#FBBF24]">🐯 TIGER</span> above to calculate a
                         Statistical Estimate.
                       </p>
@@ -463,12 +494,16 @@ export default function App() {
                               className={`mt-1 text-lg sm:text-xl font-bold whitespace-nowrap ${
                                 stats.estimate.estimatedSide === 'DRAGON'
                                   ? 'text-[#F87171]'
-                                  : 'text-[#FBBF24]'
+                                  : stats.estimate.estimatedSide === 'TIGER'
+                                  ? 'text-[#FBBF24]'
+                                  : 'text-[#34D399]'
                               }`}
                             >
                               {stats.estimate.estimatedSide === 'DRAGON'
                                 ? '🐉 DRAGON'
-                                : '🐯 TIGER'}
+                                : stats.estimate.estimatedSide === 'TIGER'
+                                ? '🐯 TIGER'
+                                : '⚖️ TIE'}
                             </div>
                           </div>
 
@@ -542,7 +577,7 @@ export default function App() {
 
             {/* RIGHT COLUMN (History, Counts, Percentages, Streaks, and Roadmaps) */}
             <div className="lg:col-span-7 space-y-6">
-              {/* Statistical Breakdown Grid: Dragon Count/%, Tiger Count/%, Current Streak */}
+              {/* Statistical Breakdown Grid: Dragon Count/%, Tie Count/%, Tiger Count/%, Current Streak */}
               <section className="rounded-2xl bg-[#131822] border border-white/[0.08] p-5 sm:p-6 space-y-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h2 className="text-base font-semibold text-[#F8FAFC]">
@@ -550,6 +585,10 @@ export default function App() {
                   </h2>
                   <div className="text-xs text-[#94A3B8] font-mono tabular-nums">
                     <span>Dragon {stats.dragonPercentage}%</span>
+                    <span className="mx-1.5" aria-hidden="true">
+                      ·
+                    </span>
+                    <span>Tie {stats.tiePercentage}%</span>
                     <span className="mx-1.5" aria-hidden="true">
                       ·
                     </span>
@@ -570,6 +609,11 @@ export default function App() {
                           title={`Dragon: ${stats.dragonPercentage}%`}
                         />
                         <div
+                          className="h-full bg-[#10B981] transition-all duration-200"
+                          style={{ width: `${stats.tiePercentage}%` }}
+                          title={`Tie: ${stats.tiePercentage}%`}
+                        />
+                        <div
                           className="h-full bg-[#F59E0B] transition-all duration-200"
                           style={{ width: `${stats.tigerPercentage}%` }}
                           title={`Tiger: ${stats.tigerPercentage}%`}
@@ -579,49 +623,57 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* 5 Core Historical Metrics Required by Spec */}
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-2 border-t border-white/[0.06]">
+                {/* Core Historical Metrics including Dragon, Tie, Tiger, and Current Streak */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 border-t border-white/[0.06]">
                   <div>
-                    <div className="text-xs text-[#94A3B8]">Dragon Count</div>
-                    <div className="mt-1 font-mono tabular-nums text-xl font-bold text-[#F87171]">
-                      {stats.dragonCount}
+                    <div className="text-xs text-[#94A3B8]">🐉 Dragon</div>
+                    <div className="mt-1 font-mono tabular-nums text-lg font-bold text-[#F87171]">
+                      {stats.dragonCount}{' '}
+                      <span className="text-xs font-normal text-[#94A3B8]">
+                        ({stats.dragonPercentage}%)
+                      </span>
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-xs text-[#94A3B8]">Dragon %</div>
-                    <div className="mt-1 font-mono tabular-nums text-xl font-bold text-[#F87171]">
-                      {stats.dragonPercentage}%
+                    <div className="text-xs text-[#94A3B8]">⚖️ Tie</div>
+                    <div className="mt-1 font-mono tabular-nums text-lg font-bold text-[#34D399]">
+                      {stats.tieCount}{' '}
+                      <span className="text-xs font-normal text-[#94A3B8]">
+                        ({stats.tiePercentage}%)
+                      </span>
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-xs text-[#94A3B8]">Tiger Count</div>
-                    <div className="mt-1 font-mono tabular-nums text-xl font-bold text-[#FBBF24]">
-                      {stats.tigerCount}
+                    <div className="text-xs text-[#94A3B8]">🐯 Tiger</div>
+                    <div className="mt-1 font-mono tabular-nums text-lg font-bold text-[#FBBF24]">
+                      {stats.tigerCount}{' '}
+                      <span className="text-xs font-normal text-[#94A3B8]">
+                        ({stats.tigerPercentage}%)
+                      </span>
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-xs text-[#94A3B8]">Tiger %</div>
-                    <div className="mt-1 font-mono tabular-nums text-xl font-bold text-[#FBBF24]">
-                      {stats.tigerPercentage}%
-                    </div>
-                  </div>
-
-                  <div className="col-span-2 sm:col-span-1">
                     <div className="text-xs text-[#94A3B8]">Current Streak</div>
-                    <div className="mt-1 font-mono tabular-nums text-xl font-bold text-[#F8FAFC] whitespace-nowrap">
+                    <div className="mt-1 font-mono tabular-nums text-lg font-bold text-[#F8FAFC] whitespace-nowrap">
                       {stats.currentStreak.side ? (
                         <span
                           className={
                             stats.currentStreak.side === 'DRAGON'
                               ? 'text-[#F87171]'
-                              : 'text-[#FBBF24]'
+                              : stats.currentStreak.side === 'TIGER'
+                              ? 'text-[#FBBF24]'
+                              : 'text-[#34D399]'
                           }
                         >
-                          {stats.currentStreak.side === 'DRAGON' ? '🐉' : '🐯'} ×
-                          {stats.currentStreak.count}
+                          {stats.currentStreak.side === 'DRAGON'
+                            ? '🐉'
+                            : stats.currentStreak.side === 'TIGER'
+                            ? '🐯'
+                            : '⚖️'}{' '}
+                          ×{stats.currentStreak.count}
                         </span>
                       ) : (
                         <span className="text-[#64748B]">None</span>

@@ -98,3 +98,47 @@ export const TigerCrestSvg: React.FC<{ className?: string }> = ({
     />
   </svg>
 );
+
+export const TieCrestSvg: React.FC<{ className?: string }> = ({
+  className = 'w-10 h-10',
+}) => (
+  <svg
+    viewBox="0 0 64 64"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    aria-hidden="true"
+  >
+    <circle
+      cx="32"
+      cy="32"
+      r="29"
+      stroke="currentColor"
+      strokeOpacity="0.28"
+      strokeWidth="1.5"
+    />
+    <circle
+      cx="32"
+      cy="32"
+      r="24"
+      stroke="currentColor"
+      strokeOpacity="0.15"
+      strokeWidth="1"
+      strokeDasharray="3 3"
+    />
+    {/* Imperial Jade Equilibrium / Harmony Crest for TIE */}
+    <path
+      d="M32 14L48 32L32 50L16 32L32 14Z"
+      stroke="currentColor"
+      strokeWidth="2.6"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M22 32H42M32 22V42"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    />
+    <circle cx="32" cy="32" r="4" fill="currentColor" />
+  </svg>
+);

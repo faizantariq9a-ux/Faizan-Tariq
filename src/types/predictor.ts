@@ -1,4 +1,4 @@
-export type RoundSide = 'DRAGON' | 'TIGER';
+export type RoundSide = 'DRAGON' | 'TIGER' | 'TIE';
 
 export interface RoundRecord {
   id: string;
@@ -19,6 +19,7 @@ export interface StatisticalEstimate {
   roundsAnalyzed: number;
   dragonHistoricalPct: number;
   tigerHistoricalPct: number;
+  tieHistoricalPct: number;
   recentMomentumSide: RoundSide;
   recentMomentumPct: number;
   patternType: 'Streak Continuation' | 'Alternating Chop' | 'Empirical Frequency';
@@ -29,11 +30,14 @@ export interface StatisticsSummary {
   totalRounds: number;
   dragonCount: number;
   tigerCount: number;
+  tieCount: number;
   dragonPercentage: number;
   tigerPercentage: number;
+  tiePercentage: number;
   currentStreak: StreakInfo;
   longestDragonStreak: number;
   longestTigerStreak: number;
+  longestTieStreak: number;
   alternationRate: number;
   estimate: StatisticalEstimate | null;
 }

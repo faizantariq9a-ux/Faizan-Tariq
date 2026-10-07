@@ -22,11 +22,14 @@ export function calculateStatistics(rounds: RoundRecord[]): StatisticsSummary {
       totalRounds: 0,
       dragonCount: 0,
       tigerCount: 0,
+      tieCount: 0,
       dragonPercentage: 0,
       tigerPercentage: 0,
+      tiePercentage: 0,
       currentStreak: { side: null, count: 0 },
       longestDragonStreak: 0,
       longestTigerStreak: 0,
+      longestTieStreak: 0,
       alternationRate: 0,
       estimate: null,
     };
@@ -34,8 +37,10 @@ export function calculateStatistics(rounds: RoundRecord[]): StatisticsSummary {
 
   let dragonCount = 0;
   let tigerCount = 0;
+  let tieCount = 0;
   let longestDragonStreak = 0;
   let longestTigerStreak = 0;
+  let longestTieStreak = 0;
   let runningSide: RoundSide | null = null;
   let runningCount = 0;
   let alternations = 0;
@@ -44,8 +49,10 @@ export function calculateStatistics(rounds: RoundRecord[]): StatisticsSummary {
     const side = capped[i].side;
     if (side === 'DRAGON') {
       dragonCount++;
-    } else {
+    } else if (side === 'TIGER') {
       tigerCount++;
+    } else {
+      tieCount++;
     }
 
     if (i > 0 && capped[i - 1].side !== side) {
@@ -63,6 +70,8 @@ export function calculateStatistics(rounds: RoundRecord[]): StatisticsSummary {
       longestDragonStreak = runningCount;
     } else if (side === 'TIGER' && runningCount > longestTigerStreak) {
       longestTigerStreak = runningCount;
+    } else if (side === 'TIE' && runningCount > longestTieStreak) {
+      longestTieStreak = runningCount;
     }
   }
 
@@ -73,6 +82,7 @@ export function calculateStatistics(rounds: RoundRecord[]): StatisticsSummary {
 
   const dragonPercentage = Number(((dragonCount / totalRounds) * 100).toFixed(1));
   const tigerPercentage = Number(((tigerCount / totalRounds) * 100).toFixed(1));
+  const tiePercentage = Number(((tieCount / totalRounds) * 100).toFixed(1));
   const alternationRate =
     totalRounds > 1
       ? Number(((alternations / (totalRounds - 1)) * 100).toFixed(1))
@@ -84,8 +94,10 @@ export function calculateStatistics(rounds: RoundRecord[]): StatisticsSummary {
           capped,
           dragonCount,
           tigerCount,
+          tieCount,
           dragonPercentage,
           tigerPercentage,
+          tiePercentage,
           currentStreak,
           alternationRate
         )
@@ -95,11 +107,14 @@ export function calculateStatistics(rounds: RoundRecord[]): StatisticsSummary {
     totalRounds,
     dragonCount,
     tigerCount,
+    tieCount,
     dragonPercentage,
     tigerPercentage,
+    tiePercentage,
     currentStreak,
     longestDragonStreak,
     longestTigerStreak,
+    longestTieStreak,
     alternationRate,
     estimate,
   };
@@ -113,8 +128,10 @@ function computeStatisticalEstimate(
   rounds: RoundRecord[],
   dragonCount: number,
   tigerCount: number,
+  tieCount: number,
   dragonPct: number,
   tigerPct: number,
+  tiePct: number,
   currentStreak: StreakInfo,
   alternationRate: number
 ): StatisticalEstimate {
@@ -124,59 +141,73 @@ function computeStatisticalEstimate(
   // Analyze 1st-order transition following lastSide in recorded history
   let followDragon = 0;
   let followTiger = 0;
+  let followTie = 0;
   for (let i = 0; i < total - 1; i++) {
     if (rounds[i].side === lastSide) {
       if (rounds[i + 1].side === 'DRAGON') followDragon++;
-      else followTiger++;
+      else if (rounds[i + 1].side === 'TIGER') followTiger++;
+      else followTie++;
     }
   }
 
   // Recent window (up to last 10 rounds)
   const recentWindow = rounds.slice(-10);
   const recentDragon = recentWindow.filter((r) => r.side === 'DRAGON').length;
-  const recentTiger = recentWindow.length - recentDragon;
-  const recentMomentumSide: RoundSide =
-    recentDragon >= recentTiger ? 'DRAGON' : 'TIGER';
+  const recentTiger = recentWindow.filter((r) => r.side === 'TIGER').length;
+  const recentTie = recentWindow.filter((r) => r.side === 'TIE').length;
+
+  let recentMomentumSide: RoundSide = 'DRAGON';
+  const maxRecent = Math.max(recentDragon, recentTiger, recentTie);
+  if (maxRecent === recentDragon) recentMomentumSide = 'DRAGON';
+  else if (maxRecent === recentTiger) recentMomentumSide = 'TIGER';
+  else recentMomentumSide = 'TIE';
+
   const recentMomentumPct = Number(
-    (
-      (Math.max(recentDragon, recentTiger) / recentWindow.length) *
-      100
-    ).toFixed(1)
+    ((maxRecent / recentWindow.length) * 100).toFixed(1)
   );
 
   // Combine overall empirical frequency (70% weight) + transition history (30% weight)
   const overallDragonRatio = dragonCount / total;
   const overallTigerRatio = tigerCount / total;
+  const overallTieRatio = tieCount / total;
 
-  const transitionTotal = followDragon + followTiger;
+  const transitionTotal = followDragon + followTiger + followTie;
   const transDragonRatio =
     transitionTotal > 0 ? followDragon / transitionTotal : overallDragonRatio;
   const transTigerRatio =
     transitionTotal > 0 ? followTiger / transitionTotal : overallTigerRatio;
+  const transTieRatio =
+    transitionTotal > 0 ? followTie / transitionTotal : overallTieRatio;
 
   const compositeDragon = overallDragonRatio * 0.7 + transDragonRatio * 0.3;
   const compositeTiger = overallTigerRatio * 0.7 + transTigerRatio * 0.3;
+  const compositeTie = overallTieRatio * 0.7 + transTieRatio * 0.3;
 
-  let estimatedSide: RoundSide;
-  if (Math.abs(compositeDragon - compositeTiger) < 0.001) {
-    // Tie-breaker: use overall count or most recent streak side
-    estimatedSide = dragonCount >= tigerCount ? 'DRAGON' : 'TIGER';
+  let estimatedSide: RoundSide = 'DRAGON';
+  if (compositeDragon >= compositeTiger && compositeDragon >= compositeTie) {
+    estimatedSide = 'DRAGON';
+  } else if (compositeTiger >= compositeDragon && compositeTiger >= compositeTie) {
+    estimatedSide = 'TIGER';
   } else {
-    estimatedSide = compositeDragon > compositeTiger ? 'DRAGON' : 'TIGER';
+    estimatedSide = 'TIE';
   }
 
   const historicalPercentage =
-    estimatedSide === 'DRAGON' ? dragonPct : tigerPct;
+    estimatedSide === 'DRAGON'
+      ? dragonPct
+      : estimatedSide === 'TIGER'
+      ? tigerPct
+      : tiePct;
 
   let patternType: StatisticalEstimate['patternType'] = 'Empirical Frequency';
-  let rationale = `Based on ${total} recorded rounds (${dragonPct}% Dragon vs ${tigerPct}% Tiger).`;
+  let rationale = `Based on ${total} recorded rounds (${dragonPct}% Dragon · ${tigerPct}% Tiger · ${tiePct}% Tie).`;
 
   if (currentStreak.count >= 3 && currentStreak.side === estimatedSide) {
     patternType = 'Streak Continuation';
     rationale = `${estimatedSide} holds a ${currentStreak.count}-round active run and ${historicalPercentage}% historical share across ${total} rounds.`;
   } else if (alternationRate >= 60) {
     patternType = 'Alternating Chop';
-    rationale = `High table alternation (${alternationRate}% chop rate) combined with ${historicalPercentage}% historical share across ${total} rounds.`;
+    rationale = `High table alternation (${alternationRate}% switch rate) combined with ${historicalPercentage}% historical share across ${total} rounds.`;
   }
 
   return {
@@ -185,6 +216,7 @@ function computeStatisticalEstimate(
     roundsAnalyzed: total,
     dragonHistoricalPct: dragonPct,
     tigerHistoricalPct: tigerPct,
+    tieHistoricalPct: tiePct,
     recentMomentumSide,
     recentMomentumPct,
     patternType,

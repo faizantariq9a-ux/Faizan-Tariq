@@ -66,6 +66,7 @@ export const MethodologyPanel: React.FC<MethodologyPanelProps> = ({ stats }) => 
               <tr className="border-b border-white/[0.08] text-xs text-[#94A3B8]">
                 <th className="py-3 pr-4 font-medium">Metric</th>
                 <th className="py-3 px-4 font-medium">🐉 Dragon</th>
+                <th className="py-3 px-4 font-medium">⚖️ Tie</th>
                 <th className="py-3 px-4 font-medium">🐯 Tiger</th>
                 <th className="py-3 pl-4 font-medium text-right">Session Total / Note</th>
               </tr>
@@ -74,6 +75,7 @@ export const MethodologyPanel: React.FC<MethodologyPanelProps> = ({ stats }) => 
               <tr>
                 <td className="py-3.5 pr-4 font-sans text-[#CBD5E1]">Recorded Count</td>
                 <td className="py-3.5 px-4 text-[#F87171]">{stats.dragonCount} rounds</td>
+                <td className="py-3.5 px-4 text-[#34D399]">{stats.tieCount} rounds</td>
                 <td className="py-3.5 px-4 text-[#FBBF24]">{stats.tigerCount} rounds</td>
                 <td className="py-3.5 pl-4 text-right text-[#F8FAFC]">
                   {stats.totalRounds} / 100 max
@@ -82,6 +84,7 @@ export const MethodologyPanel: React.FC<MethodologyPanelProps> = ({ stats }) => 
               <tr>
                 <td className="py-3.5 pr-4 font-sans text-[#CBD5E1]">Historical Share</td>
                 <td className="py-3.5 px-4 text-[#F87171]">{stats.dragonPercentage}%</td>
+                <td className="py-3.5 px-4 text-[#34D399]">{stats.tiePercentage}%</td>
                 <td className="py-3.5 px-4 text-[#FBBF24]">{stats.tigerPercentage}%</td>
                 <td className="py-3.5 pl-4 text-right text-[#94A3B8]">
                   {stats.totalRounds > 0 ? '100.0%' : '0.0%'}
@@ -90,6 +93,7 @@ export const MethodologyPanel: React.FC<MethodologyPanelProps> = ({ stats }) => 
               <tr>
                 <td className="py-3.5 pr-4 font-sans text-[#CBD5E1]">Longest Streak</td>
                 <td className="py-3.5 px-4 text-[#F87171]">×{stats.longestDragonStreak}</td>
+                <td className="py-3.5 px-4 text-[#34D399]">×{stats.longestTieStreak}</td>
                 <td className="py-3.5 px-4 text-[#FBBF24]">×{stats.longestTigerStreak}</td>
                 <td className="py-3.5 pl-4 text-right text-[#94A3B8]">
                   Active:{' '}
@@ -100,7 +104,7 @@ export const MethodologyPanel: React.FC<MethodologyPanelProps> = ({ stats }) => 
               </tr>
               <tr>
                 <td className="py-3.5 pr-4 font-sans text-[#CBD5E1]">Table Alternation (Chop)</td>
-                <td className="py-3.5 px-4 text-[#94A3B8]" colSpan={2}>
+                <td className="py-3.5 px-4 text-[#94A3B8]" colSpan={3}>
                   Side switches every {stats.alternationRate}% of consecutive rounds
                 </td>
                 <td className="py-3.5 pl-4 text-right text-[#F8FAFC]">

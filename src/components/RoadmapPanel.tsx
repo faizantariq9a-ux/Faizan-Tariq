@@ -51,7 +51,8 @@ export const RoadmapPanel: React.FC<RoadmapPanelProps> = ({
 
         {rounds.length === 0 ? (
           <div className="py-8 text-center text-sm text-[#64748B]">
-            No rounds recorded yet. Tap <span className="text-[#F87171]">🐉 DRAGON</span> or{' '}
+            No rounds recorded yet. Tap <span className="text-[#F87171]">🐉 DRAGON</span>,{' '}
+            <span className="text-[#34D399]">⚖️ TIE</span>, or{' '}
             <span className="text-[#FBBF24]">🐯 TIGER</span> to record your first round.
           </div>
         ) : (
@@ -73,7 +74,7 @@ export const RoadmapPanel: React.FC<RoadmapPanelProps> = ({
                         : 'opacity-90 hover:opacity-100'
                     }`}
                   >
-                    {r.side === 'DRAGON' ? '🐉' : '🐯'}
+                    {r.side === 'DRAGON' ? '🐉' : r.side === 'TIGER' ? '🐯' : '⚖️'}
                   </span>
                 );
               })}
@@ -85,7 +86,12 @@ export const RoadmapPanel: React.FC<RoadmapPanelProps> = ({
               </span>
               <span>
                 Latest: Round #{rounds[rounds.length - 1].roundNumber} (
-                {rounds[rounds.length - 1].side === 'DRAGON' ? '🐉 DRAGON' : '🐯 TIGER'})
+                {rounds[rounds.length - 1].side === 'DRAGON'
+                  ? '🐉 DRAGON'
+                  : rounds[rounds.length - 1].side === 'TIGER'
+                  ? '🐯 TIGER'
+                  : '⚖️ TIE'}
+                )
               </span>
             </div>
           </div>
@@ -102,7 +108,7 @@ export const RoadmapPanel: React.FC<RoadmapPanelProps> = ({
                 Big Road Streak Matrix
               </h3>
               <p className="text-xs text-[#94A3B8] mt-0.5">
-                Each column tracks a consecutive run of Dragon or Tiger
+                Each column tracks a consecutive run of Dragon, Tiger, or Tie
               </p>
             </div>
             <span className="text-xs text-[#94A3B8] font-mono tabular-nums">
@@ -132,6 +138,7 @@ export const RoadmapPanel: React.FC<RoadmapPanelProps> = ({
                         );
                       }
                       const isDragon = item.side === 'DRAGON';
+                      const isTiger = item.side === 'TIGER';
                       return (
                         <div
                           key={item.id}
@@ -139,10 +146,18 @@ export const RoadmapPanel: React.FC<RoadmapPanelProps> = ({
                           className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-mono font-semibold tabular-nums transition-transform ${
                             isDragon
                               ? 'bg-[#DC2626]/20 border border-[#EF4444]/60 text-[#FCA5A5]'
-                              : 'bg-[#F59E0B]/20 border border-[#FBBF24]/60 text-[#FDE68A]'
+                              : isTiger
+                              ? 'bg-[#F59E0B]/20 border border-[#FBBF24]/60 text-[#FDE68A]'
+                              : 'bg-[#10B981]/20 border border-[#34D399]/60 text-[#A7F3D0]'
                           }`}
                         >
-                          {overflowCount ? `+${overflowCount}` : isDragon ? 'D' : 'T'}
+                          {overflowCount
+                            ? `+${overflowCount}`
+                            : isDragon
+                            ? 'D'
+                            : isTiger
+                            ? 'T'
+                            : 'E'}
                         </div>
                       );
                     })}
@@ -171,7 +186,7 @@ export const RoadmapPanel: React.FC<RoadmapPanelProps> = ({
 
           {rounds.length === 0 ? (
             <div className="h-44 flex items-center justify-center text-xs text-[#64748B] bg-[#0B0E14] rounded-xl border border-white/[0.05]">
-              Bead Plate markers appear as you record Dragon or Tiger results.
+              Bead Plate markers appear as you record Dragon, Tiger, or Tie results.
             </div>
           ) : (
             <div className="overflow-x-auto pb-2">
@@ -189,6 +204,7 @@ export const RoadmapPanel: React.FC<RoadmapPanelProps> = ({
                         );
                       }
                       const isDragon = item.side === 'DRAGON';
+                      const isTiger = item.side === 'TIGER';
                       return (
                         <div
                           key={item.id}
@@ -196,10 +212,12 @@ export const RoadmapPanel: React.FC<RoadmapPanelProps> = ({
                           className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-transform ${
                             isDragon
                               ? 'bg-[#991B1B]/50 border border-[#EF4444]/60'
-                              : 'bg-[#B45309]/50 border border-[#F59E0B]/60'
+                              : isTiger
+                              ? 'bg-[#B45309]/50 border border-[#F59E0B]/60'
+                              : 'bg-[#065F46]/50 border border-[#10B981]/60'
                           }`}
                         >
-                          {isDragon ? '🐉' : '🐯'}
+                          {isDragon ? '🐉' : isTiger ? '🐯' : '⚖️'}
                         </div>
                       );
                     })}
